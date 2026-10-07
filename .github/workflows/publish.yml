@@ -19,15 +19,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx tsc --noEmit
+      - run: npm run build
       - uses: actions/configure-pages@v5
-      - name: Collect public site
-        run: |
-          mkdir _public
-          cp index.html style.css app.js data.js assortment-table.html _public/
-          cp -R assets documents _public/
-          touch _public/.nojekyll
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: _public
+          path: dist
       - uses: actions/deploy-pages@v4
         id: deployment
